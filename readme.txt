@@ -5,7 +5,7 @@ Donate link: http://www.charlestonsw.com/product/wordpress-development-kit-plugi
 Tags: WordPress, development, plugins
 Requires at least: 3.4
 Tested up to: 3.9
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 
 A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.
 
@@ -75,6 +75,10 @@ Learn more on the [CSA License Terms](http://www.storelocatorplus.com/products/g
 == Changelog ==
 
 Visit the [CSA Website for details](http://www.charlestonsw.com/).
+
+= 0.5.0 =
+
+* Change: denote prelease formatted listings with "Prerelease Version" versus plain "Version".
 
 = 0.4.0 =
 

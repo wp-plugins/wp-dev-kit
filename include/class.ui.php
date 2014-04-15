@@ -245,10 +245,14 @@ if (! class_exists('wpdkPlugin_UI')) {
 
              // Standard Output
              //
-             $output .= $this->createstring_metadata_property_div( __('Version', 'csa-wpdevkit')            , 'new_version'  , $this->current_target ) ;
-             $output .= $this->createstring_metadata_property_div( __('Updated', 'csa-wpdevkit')            , 'last_updated' , $this->current_target ) ;
-             $output .= $this->createstring_metadata_property_div( __('Directory', 'csa-wpdevkit')          , 'slug'                        ) ;
-             $output .= $this->createstring_metadata_property_div( __('WP Versions', 'csa-wpdevkit')        , 'wp_versions'                 ) ;
+             $version_label =
+                     ( ( $this->current_target === 'prerelease' ) ? __('Prerelease ','csa-wpdevkit'):'' ) .
+                      __('Version', 'csa-wpdevkit')
+                     ;
+             $output .= $this->createstring_metadata_property_div( $version_label                   , 'new_version'  , $this->current_target);
+             $output .= $this->createstring_metadata_property_div( __('Updated', 'csa-wpdevkit')    , 'last_updated' , $this->current_target);
+             $output .= $this->createstring_metadata_property_div( __('Directory', 'csa-wpdevkit')  , 'slug'                                );
+             $output .= $this->createstring_metadata_property_div( __('WP Versions', 'csa-wpdevkit'), 'wp_versions'                         );
              
              if ( $extended ) {
                 $output .= $this->createstring_formatted_extendeddata();
