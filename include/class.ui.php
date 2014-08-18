@@ -140,17 +140,6 @@ if (! class_exists('wpdkPlugin_UI')) {
         function createstring_formatted_filelist() {
             $output = '';
 
-            $onClick_orig =
-                'jQuery(document).ready(function($) { '     .
-                    'var data = {'                          .
-                        "action: 'wpdk_download_file', "    .
-                        "slug: '" . $this->current_plugin['slug'] . "', ".
-                        "target: '" . $this->current_target . "' ".
-                    '}; ' .
-                    '$.post(ajaxurl, data, function(response) { alert( \'got back\' + response); });' .
-                '});'
-                ;
-
             $onClick =
                "jQuery('#secretIFrame').attr('src', '".admin_url('admin-ajax.php') ."?' + jQuery.param(" .
                         "{".

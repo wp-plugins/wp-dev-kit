@@ -4,8 +4,8 @@ Contributors: charlestonsw
 Donate link: http://www.charlestonsw.com/product/wordpress-development-kit-plugin/
 Tags: WordPress, development, plugins
 Requires at least: 3.4
-Tested up to: 3.9
-Stable tag: 0.5.0
+Tested up to: 4.0
+Stable tag: 0.5.2
 
 A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.
 
@@ -23,6 +23,11 @@ If you've not been to a local WordCamp you should attend one soon.
 Set the location of your production plugins.json file via the Settings/WP Dev Kit menu item in the admin panel of your site.
 You can learn more about the plugins.json format from the [WP Dev Kit repository on Bitbucket](https://bitbucket.org/lance_cleveland/wp-dev-kit/wiki/Home).
 Yup, it is also GPL and a public repo so go ahead and check it out.
+
+The plugins.json is a simple text file that lists your plugin slugs and version information.
+Put the plugins.json plus the readme.txt file from your plugin, renamed <slug>_readme.txt into a directory on your server.
+Now use the shortcodes noted below and the plugin information from your readme will be rendered in your page when using details mode.
+List mode will list all of the plugins that appear in your plugins.json file.
 
 Go to a page or post and use the wpdevkit shortcode.
 
@@ -75,6 +80,15 @@ Learn more on the [CSA License Terms](http://www.storelocatorplus.com/products/g
 == Changelog ==
 
 Visit the [CSA Website for details](http://www.charlestonsw.com/).
+
+= 0.5.2 =
+
+* Convert square-paren pairs to proper hyperlinks.
+* Make asterisk-lists into bullet lists.
+
+= 0.5.1 =
+
+* Change: remove latent code in UI class
 
 = 0.5.0 =
 

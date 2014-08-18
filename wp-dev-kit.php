@@ -3,11 +3,11 @@
  * Plugin Name: WordPress Development Kit Plugin
  * Plugin URI: http://www.charlestonsw.com/product/wordpress-development-kit-plugin/
  * Description: A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.
- * Version: 0.5.0
+ * Version: 0.5.2
  * Author: Charleston Software Associates
  * Author URI: http://charlestonsw.com/
  * Requires at least: 3.4
- * Tested up to : 3.9
+ * Tested up to : 4.0
  *
  * Text Domain: csa-wpdevkit
  * Domain Path: /languages/
