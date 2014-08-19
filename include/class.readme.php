@@ -122,7 +122,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          */
         private function format_content( $string ) {
             $string = preg_replace('/\n{2,}/',"\n",$string);
-            $clean_string = make_clickable( nl2br ( wp_specialchars( trim ( $string ) ) ) );
+            $clean_string = make_clickable( nl2br ( esc_html( trim ( $string ) ) ) );
             $clean_string = preg_replace('/=== (.*?) ===/'      , '<h2>$1</h2>'         , $clean_string);
             $clean_string = preg_replace('/== (.*?) ==/'        , '<h3>$1</h3>'         , $clean_string);
             $clean_string = preg_replace('/\*\*(.*?)\*\*/'      , '<strong>$1</strong>' , $clean_string);
