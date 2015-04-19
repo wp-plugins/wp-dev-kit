@@ -3,11 +3,11 @@
  * Plugin Name: WordPress Development Kit Plugin
  * Plugin URI: http://www.charlestonsw.com/product/wordpress-development-kit-plugin/
  * Description: A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.
- * Version: 0.5.3
+ * Version: 0.6.0
  * Author: Charleston Software Associates
  * Author URI: http://charlestonsw.com/
  * Requires at least: 3.4
- * Tested up to : 4.0
+ * Tested up to : 4.1.1
  *
  * Text Domain: csa-wpdevkit
  * Domain Path: /languages/
@@ -24,8 +24,8 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
     * wpdkPlugin
     *
     * @package wpdkPlugin
-    * @author Lance Cleveland <lance@charlestonsw.com>
-    * @copyright 2014 Charleston Software Associates, LLC
+    * @author Lance Cleveland <lance@lancecleveland.com>
+    * @copyright 2014-2015 Charleston Software Associates, LLC
     */
     class wpdkPlugin {
 
@@ -44,6 +44,20 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
          * @var \wpdkPlugin_Admin_UI $AdminUI
          */
         public $AdminUI;
+
+        /**
+         * The current directory, absolute path, based on the target being processed.
+         *
+         * @var string $current_directory
+         */
+        public $current_directory;
+
+        /**
+         * The metadata for the current plugin being processed.
+         *
+         * @var mixed[] $current_plugin
+         */
+        public $current_plugin;
 
         /**
          * The directory we live in.
@@ -72,18 +86,29 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
         private $options_set = false;
 
         /**
+         *
+         * @var \wpdkPlugin_PluginMeta $PluginMeta
+         */
+        public $PluginMeta;
+
+
+        /**
          * Our slug.
          *
          * @var string $slug
          */
         private $slug                   = null;
 
-
         /**
          *
          * @var \wpdkPlugin_UI $UI
          */
         public $UI;
+
+        /**
+         * @var \wpdkPlugin_UpdateEngine $UpdateEngine
+         */
+        public $UpdateEngine;
 
         /**
          * The url to this plugin admin features.
@@ -181,6 +206,21 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
         /**
          * Create and attach the UI processing object.
          */
+        function create_object_PluginMeta() {
+            if ( ! isset ( $this->PluginMeta  ) ) {
+                require_once( $this->dir.'include/class.plugin_meta.php' );
+                $this->PluginMeta =
+                    new wpdkPlugin_PluginMeta(
+                        array(
+                            'addon'     => $this
+                        )
+                    );
+            }
+        }
+
+        /**
+         * Create and attach the UI processing object.
+         */
         function createobject_UI() {
             if ( ! isset ( $this->UI  ) ) {
                 require_once( $this->dir.'include/class.ui.php' );
@@ -193,6 +233,53 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
             }
         }
 
+
+        /**
+         * Create and attach the update engine object.
+         */
+        function create_object_UpdateEngine() {
+            if ( ! isset ( $this->UpdateEngine  ) ) {
+                require_once( $this->dir.'include/class.update_engine.php' );
+                $this->UpdateEngine =
+                    new wpdkPlugin_UpdateEngine(
+                        array(
+                            'addon'     => $this
+                        )
+                    );
+            }
+        }
+
+        /**
+         * Set the directory based on the target.
+         *
+         * @param string $target
+         */
+        function set_current_directory( $target = 'production' ) {
+            $this->current_directory =
+                ( $target === 'production' )                   ?
+                    $this->options['production_directory'] :
+                    $this->options['prerelease_directory'] ;
+        }
+
+        /**
+         * Set the current_plugin property via a slug.
+         *
+         * Assumes JSON_metadata_array has already been loaded.
+         *
+         * @param string $slug the slug to set current plugin data from
+         */
+        function set_current_plugin( $slug = null ) {
+            if ( $slug === null ) {
+                if ( ! isset( $_REQUEST['slug'] ) ) { return; }
+                $slug = $_REQUEST['slug'];
+            }
+            $this->PluginMeta->metadata_array['pluginMeta'][$slug]['slug'] = $slug;
+            $this->current_plugin = $this->PluginMeta->metadata_array['pluginMeta'][$slug];
+            $this->current_plugin['slug'] = $slug;
+            $this->current_plugin['zipbase'] =  ( ! empty( $this->current_plugin['zipbase'] ) ) ? $this->current_plugin['zipbase'] : $slug;
+            $this->current_plugin['zipfile'] = $this->current_directory . $this->set_zip_filename();
+        }
+
         /**
          * Set the options by merging those from the DB with the defaults for this add-on pack.
          */
@@ -203,14 +290,25 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
             }
         }
 
+
         /**
-         * Do this after SLP initiliazes.
+         * Set a plugin base file name for a zip file.
          *
-         * @return null
+         * @param string $slug  the slug to get the zip file base for.
+         * @param string $suffix what do we want to end the filename with? (default '.zip')
+         * @return string
          */
-        function wp_init() {
-            if (!$this->setPlugin()) { return; }
-            $this->plugin->register_addon(plugin_basename(__FILE__));
+        function set_zip_filename( $slug = '', $suffix = '.zip' ) {
+            if ( empty ( $slug ) ) {
+                $slug = $this->current_plugin['slug'];
+            }
+            return (
+            isset( $this->PluginMeta->metadata_array['pluginMeta'][$slug]['zipbase'] )   ?
+                $this->PluginMeta->metadata_array['pluginMeta'][$slug]['zipbase']        :
+                $slug
+            ) .
+            $suffix
+                ;
         }
 
         /**
@@ -226,11 +324,54 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
             $GLOBALS['DebugMyPlugin']->panels['wpdevkit.main'] = new DMPPanelWPDKPlugin();
         }
 
+        /**
+         * AJAX: Download the referenced file.
+         */
         static function download_file() {
             $wpdk = wpdkPlugin::init();
             $wpdk->set_options();
-            $wpdk->createobject_UI();
-            $wpdk->UI->send_file( $_REQUEST['slug'] );
+            $wpdk->send_file( $_REQUEST['slug'] );
+            die();
+        }
+
+
+        /**
+         * Send the requested file.
+         *
+         * @param string $slug
+         */
+        function send_file( $slug ) {
+            if ( ! empty ($slug) ) {
+                $this->set_current_directory(   $_REQUEST['target'] );
+                $this->create_object_PluginMeta();
+                $this->PluginMeta->set_plugin_metadata( $_REQUEST['slug'] );
+                $this->set_current_plugin();
+                $this->send_file_header();
+                print file_get_contents( $this->current_plugin['zipfile'] );
+            }
+        }
+
+        /**
+         * Send the file Header
+         *
+         */
+        function send_file_header() {
+            header( 'Content-Description: File Transfer' );
+            header( 'Content-Disposition: attachment; filename=' . $this->set_zip_filename() );
+            header( 'Content-Type: application/zip;');
+            header( 'Pragma: no-cache');
+            header( 'Expires: 0');
+        }
+
+
+        /**
+         * AJAX: Handle plugin update requests.
+         */
+        static function updater() {
+            $wpdk = wpdkPlugin::init();
+            $wpdk->set_options();
+            $wpdk->create_object_UpdateEngine();
+            $wpdk->UpdateEngine->process_request();
             die();
         }
 
@@ -240,4 +381,6 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
     add_action( 'dmp_addpanel'  , array( 'wpdkPlugin'   , 'create_DMPPanels'    ) );
     add_action( 'wp_ajax_wpdk_download_file'            , array('wpdkPlugin','download_file') );
     add_action( 'wp_ajax_nopriv_wpdk_download_file'     , array('wpdkPlugin','download_file') );
+    add_action( 'wp_ajax_wpdk_updater'                  , array('wpdkPlugin','updater') );
+    add_action( 'wp_ajax_nopriv_wpdk_updater'           , array('wpdkPlugin','updater') );
 }

@@ -5,9 +5,9 @@ Donate link: http://www.charlestonsw.com/product/wordpress-development-kit-plugi
 Tags: WordPress, development, plugins
 Requires at least: 3.4
 Tested up to: 4.0
-Stable tag: 0.5.3
+Stable tag: 0.6.0
 
-A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.
+A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.  Now provides a turnkey premium plugin update system.
 
 == Description ==
 
@@ -57,6 +57,15 @@ The Current Releases section is updated automatically whenever I use my WP Dev K
 WP Dev Kit uses Grunt tasks and the plugins.json file to automate my production.
 This plugin ties into that automated production system to create things like the WordPress shortcodes above to create formatted output on my site with no direct editing required.
 
+= Updater System =
+
+WP Dev Kit 0.6.0 adds a premium plugin update system that can be queried by any premium plugins using the WordPress pre_set_site_transient_update_plugins and plugins_api hooks.
+This provides inline admin-panel updates to premium add-on packs.
+Your premium add-on plugins must use a standard updates class that uses these built-in WordPress hooks to query your website that is running this WordPress Dev Kit plugin.
+If it is implemented properly, your premium add-on packs will query this plugin, which reads the JSON file data stored on your WordPress server, and sends back the most current plugin version data.
+If a new version of your premium plugin is available this plugin can also handle serving the files from the specified production directory.
+You must code your premium plugins accordingly and keep your plugins.json and zip files updated on the specified production directory (a WP Dev Kit setting) on your server.
+
 = Related Links =
 
 * [Other CSA Plugins](http://profiles.wordpress.org/charlestonsw/)
@@ -80,6 +89,10 @@ Learn more on the [CSA License Terms](http://www.storelocatorplus.com/products/g
 == Changelog ==
 
 Visit the [CSA Website for details](http://www.charlestonsw.com/).
+
+= 0.6.0 =
+
+* Build-in a premium plugin update server via AJAX for sites running this plugin.
 
 = 0.5.3 =
 
