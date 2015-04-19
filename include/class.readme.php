@@ -26,7 +26,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          *
          * @var string $contents
          */
-        private $contents;
+        public $contents;
 
         /**
          * The named array of readme file metadata.
@@ -80,7 +80,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
                 if ($this->$property !== $value ) {
                     $this->$property = $value;
                     if ( $property === 'filename' ) {
-                        $this->file = $this->addon->UI->current_directory . $this->filename;
+                        $this->file = $this->addon->current_directory . $this->filename;
                     }
                 }
             }
@@ -91,7 +91,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * Return the header of the readme file as an array.
          *
          * @param boolean $extended if true read extended info (default: false)
-         *
+         * @return mixed[]
          */
         public function get_readme_data( $extended = false ) {
             $this->data = array();
@@ -151,7 +151,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * which_elements can be
          * o all = get everything
          *
-         * @param string[] $which_elements = which extra things to get, defaults to 'all'
+         * @param string $which_elements = which extra things to get, defaults to 'all'
          * @return mixed[] named array of readme properties.
          */
         private function get_extended_readme_data( $which_elements = 'all' ) {
@@ -186,6 +186,33 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
             $this->set_section( 'changelog' );
             return $this->format_content( $this->contents['sections']['changelog'] );
         }
+
+        /**
+         * Fetch the description
+         */
+        function get_description() {
+            $this->set_section( 'description' );
+            return $this->format_content( $this->contents['sections']['description'] );
+        }
+
+        /**
+         * Fetch the FAQ
+         */
+        function get_faq() {
+            $this->set_section( 'frequently asked questions' );
+            return $this->format_content( $this->contents['sections']['frequently asked questions'] );
+        }
+
+
+
+        /**
+         * Fetch the installation instructions.
+         */
+        function get_installation() {
+            $this->set_section( 'installation' );
+            return $this->format_content( $this->contents['sections']['installation'] );
+        }
+
 
         /**
          * Get the short description section out of the file contents.
