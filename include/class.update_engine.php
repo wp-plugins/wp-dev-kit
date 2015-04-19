@@ -115,7 +115,7 @@ if (! class_exists('wpdkPlugin_UI')) {
             $obj->slug          = $this->current_plugin_meta['slug'];
             $obj->plugin_name   = $this->current_plugin_meta['name'];
             $obj->homepage      = $this->current_plugin_meta['product_page'];
-            $obj->download_link = get_home_url() . preg_replace('/&fetch=info/','&fetch=file', $_SERVER['REQUEST_URI'] );
+            $obj->download_link = get_home_url() . $_SERVER['SCRIPT_NAME'] . '?action=wpdk_download_file&slug=' . $this->current_plugin_meta['slug'];
             $obj->requires      = $this->current_plugin_meta['min_wp_version'];
             $obj->tested        = $this->current_plugin_meta['tested_wp_version'];
             $obj->version       = $this->current_plugin_meta[$this->target]['new_version'];
