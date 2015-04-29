@@ -32,7 +32,7 @@ if (! class_exists('wpdkPlugin_UI')) {
          * The target 'production' or 'prerelease'
          * @var string
          */
-        private $target;
+        private $target = 'production';
 
         //-------------------------------------
         // Methods
