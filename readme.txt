@@ -1,11 +1,11 @@
 === WordPress Development Kit Plugin ===
 Plugin Name:  WordPress Development Kit Plugin
 Contributors: charlestonsw
-Donate link: http://www.charlestonsw.com/product/wordpress-development-kit-plugin/
+Donate link: http://www.storelocatorplus.com/product/wordpress-development-kit-plugin/
 Tags: WordPress, development, plugins
 Requires at least: 3.4
 Tested up to: 4.2.1
-Stable tag: 0.6.2
+Stable tag: 0.6.3
 
 A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.  Now provides a turnkey premium plugin update system.
 
@@ -84,11 +84,15 @@ You must code your premium plugins accordingly and keep your plugins.json and zi
 Like ALL of my plugins, including my premium add-ons, the license is GPL.
 You get the code, feel free to modify it as you wish.
 I prefer customers pay me because they like what I do and want to support my efforts to bring useful software to market.
-Learn more on the [CSA License Terms](http://www.storelocatorplus.com/products/general-eula/) page.
+Learn more on the  License Terms](http://www.storelocatorplus.com/products/general-eula/) page.
 
 == Changelog ==
 
-Visit the [CSA Website for details](http://www.charlestonsw.com/).
+Visit the [Store Locator Plus Website for details](http://www.storelocatorplus.com/).
+
+= 0.6.3 =
+
+* Fix the undefined name property in the inline updates popup message box.
 
 = 0.6.2 =
 
