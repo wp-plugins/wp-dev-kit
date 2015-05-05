@@ -86,6 +86,26 @@ You get the code, feel free to modify it as you wish.
 I prefer customers pay me because they like what I do and want to support my efforts to bring useful software to market.
 Learn more on the  License Terms](http://www.storelocatorplus.com/products/general-eula/) page.
 
+= What does this do? =
+
+This is the plugin I use to drive [Store Locator Plus](http://www.storelocatorplus.com) premium add-on pack information and updates.
+I upload a plugins.json file and the readme.txt files for each of my add-on packs to a directory on my web server.
+This plugin allows me to easily list the latest production and prerelease versions of my plugins, provide a list of files
+with download links on my protected subscriber-ony pages, and ties into my add-on packs inline WordPress update system.
+
+= Did you say inline WordPress updates for Premium plugins? =
+
+Yes I did.   I put the zip file on my server and make sure the plugins.json file is kept updated.
+My plugins hook into the WordPress updates system to make sure when WordPress goes looking for plugin updates my server
+is queried via this plugin.    A plugin that updates plugins.
+
+= Do you have example code? =
+
+Sure do.  Check out my linux-based grunt production system, also called ["WordPress Development Kit" on Bitbucket](https://bitbucket.org/lance_cleveland/wp-dev-kit/wiki/Home),
+that I use to push zip files, the readme.text files, and plugin.json files to my servers.  Take a look at the ./grunt/plugins.json file for the plugin data example.
+
+You can take a look at my [Store Locator Plus](https://wordpress.org/plugins/store-locator-le/) plugin and check out the include/class.update.php code.  This is the base class that all of my premium add-ons use to query the update system in this plugin.
+
 == Changelog ==
 
 Visit the [Store Locator Plus Website for details](http://www.storelocatorplus.com/).
