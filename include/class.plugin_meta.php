@@ -28,6 +28,13 @@ if (! class_exists('wpdkPlugin_PluginMeta')) {
         public $metadata_array;
 
         /**
+         * Has the metadata been set already?
+         *
+         * @var bool
+         */
+        private $meta_set;
+
+        /**
          * The readme file processor object.
          *
          * @var \wpdkPlugin_ReadMe $readme
@@ -51,6 +58,8 @@ if (! class_exists('wpdkPlugin_PluginMeta')) {
                     if (property_exists($this,$property)) { $this->$property = $value; }
                 }
             }
+            $this->meta_set['production'] = false;
+            $this->meta_set['prerelease'] = false;
         }
 
         /**
@@ -86,11 +95,17 @@ if (! class_exists('wpdkPlugin_PluginMeta')) {
          * @param boolean $extended show extra readme data
          */
         function set_plugin_metadata( $slug = null, $extended = false ) {
-            if ( $slug === null ) {
-                $slug = isset( $_REQUEST['slug'] ) ? $_REQUEST['slug'] : '';
+            if ( ! $this->meta_set[$this->addon->current_target] ) {
+                if ($slug === null) {
+                    $slug = $this->addon->set_plugin_slug();
+                    if ($slug === null) {
+                        return;
+                    }
+                }
+                $this->set_plugin_metadata_json();
+                $this->set_plugin_metadata_readme($slug, $extended);
+                $this->meta_set[$this->addon->current_target] = true;
             }
-            $this->set_plugin_metadata_json();
-            $this->set_plugin_metadata_readme( $slug , $extended );
         }
 
         /**

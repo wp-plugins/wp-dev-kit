@@ -3,7 +3,7 @@
  * Plugin Name: WordPress Development Kit Plugin
  * Plugin URI: http://www.charlestonsw.com/product/wordpress-development-kit-plugin/
  * Description: A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.
- * Version: 0.6.4
+ * Version: 0.7.01
  * Author: Charleston Software Associates
  * Author URI: http://charlestonsw.com/
  * Requires at least: 3.4
@@ -60,6 +60,13 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
         public $current_plugin;
 
         /**
+         * The current target build level.
+         *
+         * @var string production (default) || prerelease
+         */
+        public $current_target = 'production';
+
+        /**
          * The directory we live in.
          *
          * @var string $dir
@@ -73,6 +80,7 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
          */
         public $options = array(
             'list_heading_tag'     => 'h1',
+            'last_ten_requests'    => '' ,
             'production_directory' => '/var/www/html/wp-content/production_files/' ,
             'plugin_json_file'     => 'plugins.json' ,
             'prerelease_directory' => '/var/www/html/wp-content/prerelease_files/' ,
@@ -90,6 +98,11 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
          * @var \wpdkPlugin_PluginMeta $PluginMeta
          */
         public $PluginMeta;
+
+        /**
+         * @var string the requested slug
+         */
+        public $requested_slug = null;
 
 
         /**
@@ -257,8 +270,11 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
          * @param string $target
          */
         function set_current_directory( $target = 'production' ) {
+
+            $this->current_target = ( $target === 'prerelease' ) ? 'prerelease' : 'production';
+
             $this->current_directory =
-                ( $target === 'prerelease' )                   ?
+                ( $this->current_target === 'prerelease' )                   ?
                     $this->options['prerelease_directory'] :
                     $this->options['production_directory'] ;
         }
@@ -269,17 +285,46 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
          * Assumes JSON_metadata_array has already been loaded.
          *
          * @param string $slug the slug to set current plugin data from
+         * @return boolean TRUE if set current plugin is OK.
          */
         function set_current_plugin( $slug = null ) {
+
+            // Set slug
+            //
             if ( $slug === null ) {
-                if ( ! isset( $_REQUEST['slug'] ) ) { return; }
-                $slug = $_REQUEST['slug'];
+                $slug = $this->set_plugin_slug();
+                if ( $slug === null ) { return false; }
             }
+
+            // Set meta
+            //
+            $this->create_object_PluginMeta();
+            $this->PluginMeta->set_plugin_metadata();
             $this->PluginMeta->metadata_array['pluginMeta'][$slug]['slug'] = $slug;
+
+            // Set current plugin
+            //
             $this->current_plugin = $this->PluginMeta->metadata_array['pluginMeta'][$slug];
             $this->current_plugin['slug'] = $slug;
             $this->current_plugin['zipbase'] =  ( ! empty( $this->current_plugin['zipbase'] ) ) ? $this->current_plugin['zipbase'] : $slug;
             $this->current_plugin['zipfile'] = $this->current_directory . $this->set_zip_filename();
+            return true;
+        }
+
+        /**
+         * Set the slug requested.
+         *
+         * @return mixed current slug from request if set.
+         */
+        function set_plugin_slug() {
+            if ( $this->requested_slug === null ) {
+                if (isset($_REQUEST['slug']) && (!empty($_REQUEST['slug']))) {
+                    $this->requested_slug = $_REQUEST['slug'];
+                } else if (isset($_REQUEST['plugin']) && (!empty($_REQUEST['plugin']))) {
+                    $this->requested_slug =  $_REQUEST['plugin'];
+                }
+            }
+            return $this->requested_slug;
         }
 
         /**
@@ -346,7 +391,7 @@ if ( ! class_exists( 'wpdkPlugin' ) ) {
             if ( ! empty ($slug) ) {
                 $this->set_current_directory(   $_REQUEST['target'] );
                 $this->create_object_PluginMeta();
-                $this->PluginMeta->set_plugin_metadata( $_REQUEST['slug'] );
+                $this->PluginMeta->set_plugin_metadata();
                 $this->set_current_plugin();
                 $this->send_file_header();
                 print file_get_contents( $this->current_plugin['zipfile'] );

@@ -22,13 +22,6 @@ if (! class_exists('wpdkPlugin_UI')) {
         private $addon;
 
         /**
-         * The current build target.
-         *
-         * @var string $current_target
-         */
-        public $current_target;
-
-        /**
          * The style handle.
          *
          * @var string $styleHandle
@@ -92,7 +85,7 @@ if (! class_exists('wpdkPlugin_UI')) {
                         "{".
                             "action: 'wpdk_download_file', "    .
                             "slug: '" . $this->addon->current_plugin['slug'] . "', ".
-                            "target: '" . $this->current_target . "' ".
+                            "target: '" . $this->addon->current_target . "' ".
                         "}".
                     ")".
                 ");"
@@ -123,6 +116,11 @@ if (! class_exists('wpdkPlugin_UI')) {
             return apply_filters('wpdevkit_format_filelist',$output,$this->addon->current_plugin);
         }
 
+        /**
+         * Create the file info div.
+         *
+         * @return string
+         */
         function createstring_fileinfo_div() {
             $output =
                 '<div class="wpdk-listitem">' .
@@ -137,7 +135,7 @@ if (! class_exists('wpdkPlugin_UI')) {
 
                     // version
                     sprintf('<span class="wpdk-filesize">%s</span>',
-                        $this->addon->current_plugin[$this->current_target]['new_version']
+                        $this->addon->current_plugin[$this->addon->current_target]['new_version']
                         ) .
 
                 '</div>';
@@ -182,11 +180,11 @@ if (! class_exists('wpdkPlugin_UI')) {
              // Standard Output
              //
              $version_label =
-                     ( ( $this->current_target === 'prerelease' ) ? __('Prerelease ','csa-wpdevkit'):'' ) .
+                     ( ( $this->addon->current_target === 'prerelease' ) ? __('Prerelease ','csa-wpdevkit'):'' ) .
                       __('Version', 'csa-wpdevkit')
                      ;
-             $output .= $this->createstring_metadata_property_div( $version_label                   , 'new_version'  , $this->current_target);
-             $output .= $this->createstring_metadata_property_div( __('Updated', 'csa-wpdevkit')    , 'last_updated' , $this->current_target);
+             $output .= $this->createstring_metadata_property_div( $version_label                   , 'new_version'  , $this->addon->current_target);
+             $output .= $this->createstring_metadata_property_div( __('Updated', 'csa-wpdevkit')    , 'last_updated' , $this->addon->current_target);
              $output .= $this->createstring_metadata_property_div( __('Directory', 'csa-wpdevkit')  , 'slug'                                );
              $output .= $this->createstring_metadata_property_div( __('WP Versions', 'csa-wpdevkit'), 'wp_versions'                         );
              
@@ -246,8 +244,7 @@ if (! class_exists('wpdkPlugin_UI')) {
             $output = '';
             foreach (array_keys($this->addon->PluginMeta->metadata_array['pluginMeta']) as $current_slug ) {
                 $this->addon->set_current_plugin( $current_slug );
-
-                if ( isset( $this->addon->current_plugin[$this->current_target] ) ) {
+                if ( isset( $this->addon->current_plugin[$this->addon->current_target] ) ) {
                     if ( file_exists( $this->addon->current_plugin['zipfile'] ) && is_readable( $this->addon->current_plugin['zipfile'] ) ) {
                         $output .= $this->createstring_formatted_filelist();
                     }
@@ -260,6 +257,7 @@ if (! class_exists('wpdkPlugin_UI')) {
 
             return $output;
         }
+
 
         /**
          * Dump out the production metadata where the shortcode used to be.
@@ -277,14 +275,14 @@ if (! class_exists('wpdkPlugin_UI')) {
             if ( empty( $slug ) ) {
                 foreach (array_keys($this->addon->PluginMeta->metadata_array['pluginMeta']) as $current_slug ) {
                     $this->addon->set_current_plugin( $current_slug );
-                    $output .= $this->createstring_formatted_metadata( $extended , $this->current_target );
+                    $output .= $this->createstring_formatted_metadata( $extended , $this->addon->current_target );
                 }
                 
             // List one
             //
             } else {
                 $this->addon->set_current_plugin($slug);
-                $output .= $this->createstring_formatted_metadata( $extended , $this->current_target );
+                $output .= $this->createstring_formatted_metadata( $extended , $this->addon->current_target );
             }
 
             return $output;
@@ -332,7 +330,7 @@ if (! class_exists('wpdkPlugin_UI')) {
             if ( ! isset( $atts['target'] ) ) { $atts['target'] = 'production'; }
             $this->addon->set_options();
 
-            $this->current_target =  ( ( $atts['target'] === 'prerelease' ) ? 'prerelease' : 'production' );
+            $this->addon->current_target =  ( ( $atts['target'] === 'prerelease' ) ? 'prerelease' : 'production' );
             $this->addon->set_current_directory( $atts['target'] );
 
             $this->addon->create_object_PluginMeta();
