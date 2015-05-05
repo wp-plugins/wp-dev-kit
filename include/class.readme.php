@@ -48,7 +48,12 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * @var string $file
          */
         private $file;
-        
+
+        /**
+         * @var bool does the readme exist?
+         */
+        private $file_exists = false;
+
         //-------------------------------------
         // Methods
         //-------------------------------------
@@ -96,6 +101,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
         public function get_readme_data( $extended = false ) {
             $this->data = array();
             if ( file_exists( $this->file ) && is_readable( $this->file ) ) {
+                $this->file_exists = true;
                 $readme_headers = array(
                     'name'              => 'Plugin Name',
                     'min_wp_version'    => 'Requires at least',
@@ -183,6 +189,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * Fetch the changelog content.
          */
         function get_changelog() {
+            if ( ! $this->file_exists ) { return ''; }
             $this->set_section( 'changelog' );
             return $this->format_content( $this->contents['sections']['changelog'] );
         }
@@ -191,6 +198,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * Fetch the description
          */
         function get_description() {
+            if ( ! $this->file_exists ) { return ''; }
             $this->set_section( 'description' );
             return $this->format_content( $this->contents['sections']['description'] );
         }
@@ -199,6 +207,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * Fetch the FAQ
          */
         function get_faq() {
+            if ( ! $this->file_exists ) { return ''; }
             $this->set_section( 'frequently asked questions' );
             return $this->format_content( $this->contents['sections']['frequently asked questions'] );
         }
@@ -209,6 +218,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * Fetch the installation instructions.
          */
         function get_installation() {
+            if ( ! $this->file_exists ) { return ''; }
             $this->set_section( 'installation' );
             return $this->format_content( $this->contents['sections']['installation'] );
         }
@@ -220,6 +230,7 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          * @return string
          */
         function get_short_description() {
+            if ( ! $this->file_exists ) { return ''; }
             $description = '';
 
             if ( ! empty( $this->contents['sections']['header'] ) ) {
@@ -258,8 +269,11 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
         function set_section( $marker ) {
             if ( empty( $marker ) ) { return; }
             $matches = array();
-            preg_match('/(== '.$marker.' ==(.*?))($|==)/is',$this->contents['raw'],$matches);
-            $this->contents['sections'][$marker] = $matches[2];
+            if ( preg_match('/(== '.$marker.' ==(.*?))($|==)/is',$this->contents['raw'],$matches) === 1 ) {
+                $this->contents['sections'][$marker] = $matches[2];
+            } else {
+                $this->contents['sections'][$marker] = '';
+            }
         }
 	}
 }

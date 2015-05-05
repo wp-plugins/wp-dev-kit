@@ -126,6 +126,13 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
                         __('List Heading HTML','csa-wpdevkit'),
                         __('Wrap the formatted list headings in this HTML tag.', 'csa-wpdevkit')
                         );
+            $this->optionMeta['last_ten_requests'] =
+                $this->create_OptionMeta(
+                    'last_ten_requests',
+                    __('Last 10 Update Requests','csa-wpdevkit'),
+                    __('The last 10 plugin system update requests.', 'csa-wpdevkit'),
+                    'pre'
+                );
         }
 
         /**
@@ -152,6 +159,9 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
          */
         function render_Input($args) {
             switch ($args['type']) {
+                case 'pre':
+                    $this->render_pre_input($args);
+                    break;
                 case 'text':
                     $this->render_TextInput($args);
                     break;
@@ -199,6 +209,26 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
                             )
                         );
             }
+        }
+
+
+        /**
+         * Render the pre for a settings field.
+         *
+         * @param mixed[] $args
+         */
+        function render_pre_input($args) {
+            if (!empty($args['description'])) {
+                print "<p class='description'>{$args['description']}</p>";
+            }
+            print "<pre ".
+                "id='wpdevkit_options[{$args['id']}]' ".
+                "name='wpdevkit_options[{$args['id']}]' ".
+                ">";
+            foreach ( $this->addon->options[$args['id']] as $request_data) {
+                print $request_data . "\n";
+            }
+            print '</pre>';
         }
 
         /**
