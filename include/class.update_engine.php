@@ -113,6 +113,7 @@ if (! class_exists('wpdkPlugin_UI')) {
             $obj->downloaded    = '999';
 
             $obj->slug          = $this->current_plugin_meta['slug'];
+            $obj->plugin        = $this->current_plugin_meta['slug'];
             $obj->name          = $this->current_plugin_meta['name'];
             $obj->plugin_name   = $this->current_plugin_meta['name'];
             $obj->homepage      = $this->current_plugin_meta['product_page'];
