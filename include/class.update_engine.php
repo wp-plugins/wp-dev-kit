@@ -106,11 +106,13 @@ if (! class_exists('wpdkPlugin_UI')) {
             }
             $last_ten[] =
                 sprintf(
-                    __('Slug %s request for %s %s <pre>%s</pre>'),
+                    __('Slug %s request for %s %s <pre>%s</pre> FROM: <pre>%s</pre> REQUEST: <pre>%s</pre>'),
                     $this->addon->current_plugin['slug'],
                     $this->addon->current_target ,
                     $requested_item ,
-                    print_r($this->current_plugin_meta,true)
+                    print_r($this->current_plugin_meta,true),
+                    print_r($_SERVER , true ),
+                    print_r($_REQUEST , true )
                 );
             $this->addon->options['last_ten_requests'] = $last_ten;
             update_option('wpdevkit_options' , $this->addon->options );
