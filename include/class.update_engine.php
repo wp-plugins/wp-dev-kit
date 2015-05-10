@@ -70,10 +70,13 @@ if (! class_exists('wpdkPlugin_UI')) {
          */
         function process_request() {
             $item_to_return =  ( isset( $_REQUEST['fetch'] ) ) ? $_REQUEST['fetch'] : 'file';
-            if ( ! $this->addon->set_current_plugin( ) ) { return; }
+            if ( ! $this->addon->set_current_plugin( ) ) {
+                $this->update_last_ten( $item_to_return , true );
+                return;
+            }
 
             $this->current_plugin_meta = $this->addon->PluginMeta->metadata_array['pluginMeta'][$this->addon->current_plugin['slug']];
-            $this->update_last_ten( $item_to_return );
+            $this->update_last_ten( $item_to_return , false );
 
             // Process The Request
             //
@@ -97,8 +100,9 @@ if (! class_exists('wpdkPlugin_UI')) {
          * Log the requested item to the plugin options and update options.
          *
          * @param $requested_item
+         * @param $no_slug_data if true do not set the slug data
          */
-        function update_last_ten( $requested_item ) {
+        function update_last_ten( $requested_item , $no_slug_data = false ) {
             $last_ten = $this->addon->options['last_ten_requests'];
             if ( ! is_array( $last_ten ) ) { $last_ten = array(); }
             if ( count( $last_ten ) > 9 ) {
@@ -107,10 +111,10 @@ if (! class_exists('wpdkPlugin_UI')) {
             $last_ten[] =
                 sprintf(
                     __('Slug %s request for %s %s <pre>%s</pre> FROM: <pre>%s</pre> REQUEST: <pre>%s</pre>'),
-                    $this->addon->current_plugin['slug'],
+                    $no_slug_data ? '' : $this->addon->current_plugin['slug'],
                     $this->addon->current_target ,
                     $requested_item ,
-                    print_r($this->current_plugin_meta,true),
+                    $no_slug_data ? '' : print_r($this->current_plugin_meta,true),
                     print_r($_SERVER , true ),
                     print_r($_REQUEST , true )
                 );
