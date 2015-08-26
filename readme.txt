@@ -5,7 +5,7 @@ Donate link: http://www.storelocatorplus.com/product/wordpress-development-kit-p
 Tags: WordPress, development, plugins
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.0.01
+Stable tag: 1.0.02
 
 A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.  Now provides a turnkey premium plugin update system.
 
@@ -66,6 +66,12 @@ If it is implemented properly, your premium add-on packs will query this plugin,
 If a new version of your premium plugin is available this plugin can also handle serving the files from the specified production directory.
 You must code your premium plugins accordingly and keep your plugins.json and zip files updated on the specified production directory (a WP Dev Kit setting) on your server.
 
+= Validate Woocommerce Subscriptions =
+
+Version 1.0 adds the ability to specify a Woocommerce subscription product ID and a list of plugin slugs to be validated against an active subscription.
+The update request must send a UID (user ID) and SID (subscription ID) parameter to the update system.
+The UID and SID will be validated against known active subscriptions and only allow an update file to be retrieved if the specified UID has a valid subscription.
+
 = Related Links =
 
 * [Other CSA Plugins](http://profiles.wordpress.org/charlestonsw/)
@@ -109,6 +115,11 @@ You can take a look at my [Store Locator Plus](https://wordpress.org/plugins/sto
 == Changelog ==
 
 Visit the [Store Locator Plus Website for details](http://www.storelocatorplus.com/).
+
+= 1.0.02 =
+
+* Return the Woo subscription key for the show_subscriptions action.
+* Add option to validate specified product slugs against subscriptions before sending download files.
 
 = 1.0.01 =
 

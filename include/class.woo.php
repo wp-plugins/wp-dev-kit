@@ -9,11 +9,11 @@
  *
  * Text Domain: csa-wpdevkit
  *
- * @package wpdkPlugin\UI\Woo
+ * @package wpdkPlugin\Woo
  * @author Lance Cleveland <lance@charlestonsw.com>
  * @copyright 2015 Charleston Software Associates, LLC
  */
-class wpdkPlugin_UI_Woo extends WPDK_BaseClass_Object {
+class wpdkPlugin_Woo extends WPDK_BaseClass_Object {
     public  $woo_active;
     public  $subscriptions_active;
 
@@ -40,9 +40,34 @@ class wpdkPlugin_UI_Woo extends WPDK_BaseClass_Object {
             new WP_Error( 'no_woo' , sprintf( __('Not active subscription found for product id %d.', 'csa-wpdevkit') , $this->addon->options['subscription_product_id'] ) );
         }
 
-        return maybe_serialize(WC_Subscriptions_Manager::get_users_subscriptions( $this->addon->UI->current_uid ) );
+        $subscriptions = WC_Subscriptions_Manager::get_users_subscriptions( $this->addon->UI->current_uid );
+        foreach ( $subscriptions as $subscription ) {
+            if ( $subscription['status'] !== 'active' ) { continue; }
+            $order_id = $subscriptions[0]['order_id'];
+            $product_id = $subscriptions[0]['poroduct_id'];
+            return WC_Subscriptions_Manager::get_subscription_key( $order_id , $product_id );
 
+        }
+
+        return   new WP_Error( 'no_woo' , __('None of your subscription orders are active.'        , 'csa-wpdevkit') );
     }
 
+    /**
+     * Validate the subscription.  Returns true if the passed in SID and UID match a valid subscription.
+     *
+     * @param string $uid
+     * @param string $sid
+     *
+     * @return bool
+     */
+    function validate_subscription( $uid , $sid ) {
+
+        $subscription = WC_Subscriptions_Manager::get_subscription( $sid );
+        if ( ! is_array( $subscription )            ) { return false; }
+        if ( ! isset( $subscription['status'    ] ) ) { return false; }
+        if ( ! isset( $subscription['product_id'] ) ) { return false; }
+
+        return WC_Subscriptions_Manager::user_has_subscription( $uid , $subscription['product_id'] , 'active' );
+    }
 
 }

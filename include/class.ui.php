@@ -5,7 +5,6 @@
  *
  * @property        $int                $current_uid;
  * @property-read   $string             $styleHandle
- * @property-read   wpdkPlugin_UI_Woo   $Woo
  *
  * @package wpdkPlugin\UI
  * @author Lance Cleveland <lance@charlestonsw.com>
@@ -14,7 +13,6 @@
 class wpdkPlugin_UI  extends WPDK_BaseClass_Object {
     public $current_uid;
     private $styleHandle            = 'wpdevkitCSS';
-    private $Woo;
 
     /**
      * UI handler constructor.
@@ -34,15 +32,6 @@ class wpdkPlugin_UI  extends WPDK_BaseClass_Object {
         }
     }
 
-    /**
-     * Create the Woo interface object.
-     */
-    private function create_object_Woo() {
-        if ( ! isset ( $this->Woo  ) ) {
-            require_once( 'class.ui.woo.php' );
-            $this->Woo = new  wpdkPlugin_UI_Woo();
-        }
-    }
 
     /**
      * Add the extended readme output to the formatted data layout.
@@ -368,8 +357,8 @@ class wpdkPlugin_UI  extends WPDK_BaseClass_Object {
         switch ( $atts['type'] ) {
             case 'woo':
             default:
-                $this->create_object_Woo();
-                $output = $this->create_string_subscription_info( $this->Woo->get_subscription_id() );
+                $this->addon->create_object_Woo();
+                $output = $this->create_string_subscription_info( $this->addon->Woo->get_subscription_id() );
         }
 
         return $output;
