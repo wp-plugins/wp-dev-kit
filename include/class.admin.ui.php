@@ -79,12 +79,6 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
          * Setup the options meta data.
          */
         function initOptions() {
-            $this->optionMeta['subscription_product_id'] =
-                $this->create_OptionMeta(
-                    'subscription_product_id',
-                    __('Subscription Product ID','csa-wpdevkit'),
-                    __('The product ID for an WooCommerce subscription product the user must have active to retrieve product updates.', 'csa-wpdevkit')
-                );
             $this->optionMeta['production_directory'] =
                 $this->create_OptionMeta(
                         'production_directory',
@@ -109,6 +103,18 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
                         __('List Heading HTML','csa-wpdevkit'),
                         __('Wrap the formatted list headings in this HTML tag.', 'csa-wpdevkit')
                         );
+            $this->optionMeta['subscription_product_id'] =
+                $this->create_OptionMeta(
+                    'subscription_product_id',
+                    __('Subscription Product ID','csa-wpdevkit'),
+                    __('The product ID for an WooCommerce subscription product the user must have active to retrieve product updates.', 'csa-wpdevkit')
+                );
+            $this->optionMeta['requires_subscription'] =
+                $this->create_OptionMeta(
+                    'requires_subscription',
+                    __('Requires Subscription','csa-wpdevkit'),
+                    __('A product slug (or slugs, comma separated) that require a subsciprtion to the Subscription Product ID in order to retrieve udpate files.', 'csa-wpdevkit')
+                );
         }
 
         /**

@@ -9,6 +9,7 @@
  * @property        wpdkPlugin              $instance
  * @property        wpdkPlugin_UpdateEngine $UpdateEngine
  * @property        wpdkPlugin_UI           $UI
+ * @property        wpdkPlugin_Woo          $Woo
  *
  *
  * @package wpdkPlugin
@@ -22,6 +23,7 @@ class wpdkPlugin {
     public  $instance;
     public  $UpdateEngine;
     public  $UI;
+    public  $Woo;
 
     /**
      * The current directory, absolute path, based on the target being processed.
@@ -62,6 +64,7 @@ class wpdkPlugin {
         'production_directory'      => '/var/www/html/wp-content/production_files/' ,
         'plugin_json_file'          => 'plugins.json' ,
         'prerelease_directory'      => '/var/www/html/wp-content/prerelease_files/' ,
+        'requires_subscription'     => '',
         'subscription_product_id'   => '',
     );
 
@@ -227,6 +230,16 @@ class wpdkPlugin {
                         'addon'     => $this
                     )
                 );
+        }
+    }
+
+    /**
+     * Create the Woo interface object.
+     */
+    function create_object_Woo() {
+        if ( ! isset ( $this->Woo  ) ) {
+            require_once('class.woo.php');
+            $this->Woo = new  wpdkPlugin_Woo();
         }
     }
 
