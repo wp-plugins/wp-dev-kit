@@ -142,7 +142,9 @@ class wpdkPlugin {
     public static function plugin_activation( ) {
         $instance = wpdkPlugin::init();
         $instance->set_options();
-        if ( version_compare( $instance->options['installed_version'], WPDK__VERSION , '<' ) ) {
+        if ( ! isset( $instance->options['installed_version'] ) || empty( $instance->options['installed_version'] ) ||
+            version_compare( $instance->options['installed_version'], WPDK__VERSION , '<' )
+        ) {
             $instance->createobject_Activation();
         }
     }

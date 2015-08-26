@@ -7,14 +7,14 @@
  * Author URI: http://charlestonsw.com/
  * Requires at least: 3.8
  * Tested up to : 4.3
- * Version: 1.0
+ * Version: 1.0.01
  *
  * Text Domain: csa-wpdevkit
  * Domain Path: /languages/
  *
  */
 
-define( 'WPDK__VERSION'     ,   '1.0'                       );
+define( 'WPDK__VERSION'     ,   '1.0.01'                       );
 define( 'WPDK__PLUGIN_DIR'  ,   plugin_dir_path( __FILE__ ) );
 define( 'WPDK__PLUGIN_FILE' ,   __FILE__                    );
 
