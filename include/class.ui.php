@@ -359,6 +359,7 @@ class wpdkPlugin_UI  extends WPDK_BaseClass_Object {
      * [wpdevkit action='show_subscription' type='woo']
      *
      * @param array $atts
+     * @return string
      */
     private function show_subscription( $atts ) {
         if ( ! isset( $atts['type']   ) ) { $atts['type']   = 'woo';      }
@@ -377,7 +378,7 @@ class wpdkPlugin_UI  extends WPDK_BaseClass_Object {
     /**
      * Create the HTML string to output for the subscription info block.
      *
-     * @param string $sid   The subscription ID.
+     * @param string|WP_Error $sid   The subscription ID.
      * @return string
      */
     private function create_string_subscription_info( $sid ) {
@@ -388,8 +389,12 @@ class wpdkPlugin_UI  extends WPDK_BaseClass_Object {
             '</div>'
         ;
 
-        if ( empty( $sid ) ) {
-            $sid_string = __( 'You do not have an active subscription.' , 'csa-wpdevkit' );
+        if ( is_wp_error( $sid ) ) {
+            $sid_string =
+                __( 'You do not have an active subscription.' , 'csa-wpdevkit' ) .
+                '<br/>' .
+                $sid->get_error_message('no_woo')
+                ;
         } else {
             $sid_string = sprintf( __('Your Subscription ID is %s.' , 'csa-wpdevkit') , $sid );
         }
