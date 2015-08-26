@@ -130,6 +130,8 @@ if (! class_exists('wpdkPlugin_PluginMeta')) {
          *
          * @param string $slug slug for a specific product
          * @param boolean $extended true to get more data from the readme file
+         *
+         * @return string
          */
         function set_plugin_metadata_readme( $slug, $extended = false ) {
             if ( ! $this->check_plugin_meta() ) { return ''; }

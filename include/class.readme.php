@@ -257,8 +257,11 @@ if (! class_exists('wpdkPlugin_ReadMe')) {
          */
         function set_header_section() {
             $matches = array();
-            preg_match('/(=== .*? ===.*?)=/s',$this->contents['raw'],$matches);
-            $this->contents['sections']['header'] = $matches[1];
+            if ( preg_match('/(=== .*? ===.*?)=/s',$this->contents['raw'],$matches) ) {
+                $this->contents['sections']['header'] = $matches[1];
+            } else {
+                $this->contents['sections']['header'] = '';
+            }
         }
 
         /**

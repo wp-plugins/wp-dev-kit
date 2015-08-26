@@ -3,9 +3,9 @@ Plugin Name:  WordPress Development Kit Plugin
 Contributors: charlestonsw
 Donate link: http://www.storelocatorplus.com/product/wordpress-development-kit-plugin/
 Tags: WordPress, development, plugins
-Requires at least: 3.4
-Tested up to: 4.2.1
-Stable tag: 0.7.03
+Requires at least: 3.8
+Tested up to: 4.3
+Stable tag: 1.0
 
 A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.  Now provides a turnkey premium plugin update system.
 
@@ -110,9 +110,18 @@ You can take a look at my [Store Locator Plus](https://wordpress.org/plugins/sto
 
 Visit the [Store Locator Plus Website for details](http://www.storelocatorplus.com/).
 
+= 1.0 =
+
+* Fix non-array foreach issue.
+* Wrap URL in last 10 requests in esc_html().
+
+= 0.7.04 =
+
+* Catch an extended data issue on the readme files for the update system.
+
 = 0.7.03 =
 
-* Add output when setting current slug fails.
+* Add output when setting current slug fails for the update system.
 
 = 0.7.02 =
 

@@ -4,42 +4,35 @@ if (! class_exists('wpdkPlugin_UI')) {
     /**
      * Holds the update engine code.
      *
+     * @property-read   wpdkPlugin  $addon                  Pointer to the parent addon object.
+     * @property        array       $current_plugin_meta    The current Plugin metadata.
+     * @property-read   string      $current_slug           The current slug being requested.
+     * @property-read   string      $ip_address             True IP of incoming request.
+     * @property        array       $request                The request in a parsed named array.
+     * @property-read   string      $target                 The target 'production' or 'prerelease'
+     * @property-read   array       $default_requeset       Default settings for update request queries.
+     *
      * @package wpdkPlugin\UpdateEngine
      * @author Lance Cleveland <lance@lancecleveland.com>
      * @copyright 2014 - 2015 Charleston Software Associates, LLC
      */
     class wpdkPlugin_UpdateEngine {
-
-        //-------------------------------------
-        // Properties
-        //-------------------------------------
-
-        /**
-         * Pointer to the parent addon object.
-         *
-         * @var \wpdkPlugin $addon
-         */
         private $addon;
-
-        /**
-         * The current Plugin metadata.
-         *
-         * @var string[] $current_plugin_meta
-         */
-        private $current_plugin_meta;
-
-        /**
-         * The current slug being requested.
-         *
-         * @var $current_slug
-         */
         private $current_slug;
+        public $current_plugin_meta;
+        private $ip_address = null;
+        private $target     = 'production';
+        public  $request    = array();
 
-        /**
-         * The target 'production' or 'prerelease'
-         * @var string
-         */
-        private $target = 'production';
+        private $default_request = array(
+            'current_version'   => '0.0',
+            'fetch'     => '',
+            'sid'       => '',
+            'slug'      => '',
+            'surl'      => '',
+            'target'    => 'production',
+            'uid'       => '',
+        );
 
         //-------------------------------------
         // Methods
@@ -47,6 +40,8 @@ if (! class_exists('wpdkPlugin_UI')) {
         
         /**
          * UI handler constructor.
+         *
+         * @param array $params
          */
         function __construct($params) {
 
@@ -61,8 +56,29 @@ if (! class_exists('wpdkPlugin_UI')) {
                 }
             }
 
-            $this->target = isset( $_REQUEST['target'] ) ? $_REQUEST['target'] : 'production';
+            $this->request = wp_parse_args( $_SERVER['QUERY_STRING'] , $this->default_request );
+            $this->target = $this->request['target'];
             $this->addon->set_current_directory( $this->target );
+        }
+
+
+        /**
+         * Return the requesting IP address, accounting for Proxy servers.
+         *
+         * @return string
+         */
+        public function get_request_ip_address() {
+            if ( is_null( $this->ip_address ) ) {
+                if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+                    $this->ip_address = $_SERVER['HTTP_X_REAL_IP'];
+                } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+                    $this->ip_address = $_SERVER['REMOTE_ADDR'];
+                } else {
+                    $this->ip_address = '0.0.0.0';
+                }
+            }
+
+            return $this->ip_address;
         }
 
         /**
@@ -70,13 +86,9 @@ if (! class_exists('wpdkPlugin_UI')) {
          */
         function process_request() {
             $item_to_return =  ( isset( $_REQUEST['fetch'] ) ) ? $_REQUEST['fetch'] : 'file';
-            if ( ! $this->addon->set_current_plugin( ) ) {
-                $this->update_last_ten( $item_to_return , true );
-                return;
-            }
+            if ( ! $this->addon->set_current_plugin( ) ) { return; }
 
             $this->current_plugin_meta = $this->addon->PluginMeta->metadata_array['pluginMeta'][$this->addon->current_plugin['slug']];
-            $this->update_last_ten( $item_to_return , false );
 
             // Process The Request
             //
@@ -87,10 +99,12 @@ if (! class_exists('wpdkPlugin_UI')) {
                     break;
 
                 case 'version':
+                    $this->log_request_to_database( );
                     $this->send_current_version();
                     break;
 
                 case 'info':
+                    $this->log_request_to_database( );
                     $this->send_info();
                     break;
             }
@@ -99,27 +113,10 @@ if (! class_exists('wpdkPlugin_UI')) {
         /**
          * Log the requested item to the plugin options and update options.
          *
-         * @param $requested_item
-         * @param $no_slug_data if true do not set the slug data
          */
-        function update_last_ten( $requested_item , $no_slug_data = false ) {
-            $last_ten = $this->addon->options['last_ten_requests'];
-            if ( ! is_array( $last_ten ) ) { $last_ten = array(); }
-            if ( count( $last_ten ) > 9 ) {
-                $deleted_element = array_shift( $last_ten );
-            }
-            $last_ten[] =
-                sprintf(
-                    __('Slug %s request for %s %s <pre>%s</pre> FROM: <pre>%s</pre> REQUEST: <pre>%s</pre>'),
-                    $no_slug_data ? '' : $this->addon->current_plugin['slug'],
-                    $this->addon->current_target ,
-                    $requested_item ,
-                    $no_slug_data ? '' : print_r($this->current_plugin_meta,true),
-                    print_r($_SERVER , true ),
-                    print_r($_REQUEST , true )
-                );
-            $this->addon->options['last_ten_requests'] = $last_ten;
-            update_option('wpdevkit_options' , $this->addon->options );
+        function log_request_to_database( ) {
+            $this->addon->create_object_Database();
+            $this->addon->Database->add_request_to_history();
         }
 
         /**

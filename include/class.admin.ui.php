@@ -4,22 +4,11 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
     /**
      * Holds the admin-only UI code.
      *
-     * @package wpdkPlugin\AdminUI
+     * @package wpdkPlugin\Admin\UI
      * @author Lance Cleveland <lance@charlestonsw.com>
      * @copyright 2014 Charleston Software Associates, LLC
      */
-    class wpdkPlugin_Admin_UI {
-
-        //-------------------------------------
-        // Properties
-        //-------------------------------------
-
-        /**
-         * Pointer to the parent addon object.
-         *
-         * @var \wpdkPlugin $addon
-         */
-        private $addon;
+    class wpdkPlugin_Admin_UI extends WPDK_BaseClass_Object {
 
         /**
          * Option meta data stdClass objects.
@@ -35,23 +24,11 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
          */
         private $styleHandle            = 'wpdevkitAdminCSS';
 
-        //-------------------------------------
-        // Methods
-        //-------------------------------------
-        
         /**
          * Admin interface constructor.
          */
-        function __construct($params) {
-            
-            // Set properties based on constructor params,
-            // if the property named in the params array is well defined.
-            //
-            if ($params !== null) {
-                foreach ($params as $property=>$value) {
-                    if (property_exists($this,$property)) { $this->$property = $value; }
-                }
-            }
+        function __construct( $options = array() ) {
+            parent::__construct( $options );
 
             // Admin CSS
             // attach to the Intel settings page.
@@ -102,6 +79,12 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
          * Setup the options meta data.
          */
         function initOptions() {
+            $this->optionMeta['subscription_product_id'] =
+                $this->create_OptionMeta(
+                    'subscription_product_id',
+                    __('Subscription Product ID','csa-wpdevkit'),
+                    __('The product ID for an WooCommerce subscription product the user must have active to retrieve product updates.', 'csa-wpdevkit')
+                );
             $this->optionMeta['production_directory'] =
                 $this->create_OptionMeta(
                         'production_directory',
@@ -126,13 +109,6 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
                         __('List Heading HTML','csa-wpdevkit'),
                         __('Wrap the formatted list headings in this HTML tag.', 'csa-wpdevkit')
                         );
-            $this->optionMeta['last_ten_requests'] =
-                $this->create_OptionMeta(
-                    'last_ten_requests',
-                    __('Last 10 Update Requests','csa-wpdevkit'),
-                    __('The last 10 plugin system update requests.', 'csa-wpdevkit'),
-                    'pre'
-                );
         }
 
         /**
@@ -161,6 +137,9 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
             switch ($args['type']) {
                 case 'pre':
                     $this->render_pre_input($args);
+                    break;
+                case 'read-only':
+                    $this->render_read_only($args);
                     break;
                 case 'text':
                     $this->render_TextInput($args);
@@ -225,10 +204,29 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
                 "id='wpdevkit_options[{$args['id']}]' ".
                 "name='wpdevkit_options[{$args['id']}]' ".
                 ">";
-            foreach ( $this->addon->options[$args['id']] as $request_data) {
+
+            foreach ( (array) $this->addon->options[$args['id']] as $request_data) {
                 print $request_data . "\n";
             }
             print '</pre>';
+        }
+
+        /**
+         * Render the read only output for a settings field.
+         *
+         * @param mixed[] $args
+         */
+        function render_read_only($args) {
+            print "<p ".
+                "id='wpdevkit_options[{$args['id']}]' ".
+                "name='wpdevkit_options[{$args['id']}]' ".
+                ">" .
+                 $this->addon->options[$args['id']]  .
+                '</p>'
+            ;
+            if (!empty($args['description'])) {
+                print "<p class='description'>{$args['description']}</p>";
+            }
         }
 
         /**
@@ -296,7 +294,6 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
         function render_SettingsPage() {
             print
                 '<div class="wrap">' .
-                    screen_icon() .
                     '<h2>WP Dev Kit '.__('Settings','csa-wpdevkit').'</h2>'.
                     '<form method="post" action="options.php">'
                     ;
@@ -312,7 +309,8 @@ if (! class_exists('wpdkPlugin_Admin_UI')) {
         /**
          * Validate the options we get.
          *
-         * @param mixed[] $option
+         * @param array $optionsRcvd
+         * @return array
          */
         function validate_Options($optionsRcvd) {
             if (!is_array($optionsRcvd)) { return; }
