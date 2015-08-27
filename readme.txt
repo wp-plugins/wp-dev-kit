@@ -5,7 +5,7 @@ Donate link: http://www.storelocatorplus.com/product/wordpress-development-kit-p
 Tags: WordPress, development, plugins
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.0.02
+Stable tag: 1.0.03
 
 A plugin that works with my WP Dev Kit, plugins.json in particular, to render product and plugin metadata on a WordPress page or post.  Now provides a turnkey premium plugin update system.
 
@@ -115,6 +115,10 @@ You can take a look at my [Store Locator Plus](https://wordpress.org/plugins/sto
 == Changelog ==
 
 Visit the [Store Locator Plus Website for details](http://www.storelocatorplus.com/).
+
+= 1.0.03 =
+
+* Fix the subscription ID output.
 
 = 1.0.02 =
 

@@ -43,9 +43,7 @@ class wpdkPlugin_Woo extends WPDK_BaseClass_Object {
         $subscriptions = WC_Subscriptions_Manager::get_users_subscriptions( $this->addon->UI->current_uid );
         foreach ( $subscriptions as $subscription ) {
             if ( $subscription['status'] !== 'active' ) { continue; }
-            $order_id = $subscriptions[0]['order_id'];
-            $product_id = $subscriptions[0]['poroduct_id'];
-            return WC_Subscriptions_Manager::get_subscription_key( $order_id , $product_id );
+            return WC_Subscriptions_Manager::get_subscription_key( $subscription['order_id'] , $subscription['product_id'] );
 
         }
 
